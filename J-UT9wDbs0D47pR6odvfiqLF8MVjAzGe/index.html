@@ -92,10 +92,30 @@
   .stackSeg { height: 100%; }
   .stackLegend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px; font-size: 12px; color: #44423c; }
   .stackLegendItem { display: flex; align-items: center; gap: 6px; }
+  .gateWrap { max-width: 380px; margin: 60px auto; text-align: center; }
+  .gateWrap h3 { margin: 0 0 8px; }
+  .gateInput { width: 100%; padding: 10px 12px; border: 1px solid #e8eaf0; border-radius: 8px; font-size: 18px; text-align: center; letter-spacing: 4px; margin: 12px 0; }
+  .gateBtn { background: #2F6FE0; color: white; border: none; border-radius: 8px; padding: 10px 18px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; }
+  .gateError { color: #b42318; font-size: 13px; margin-top: 10px; }
 </style>
 </head>
 <body>
-  <div class="container">
+  <div class="card gateWrap" id="expiredCard" style="display:none">
+    <h3>Enlace caducado</h3>
+    <p class="intro" style="margin:0">Este informe ya no está disponible. Pide a tu asesora un enlace actualizado.</p>
+  </div>
+
+  <div class="card gateWrap" id="gateCard" style="display:none">
+    <h3>Informe protegido</h3>
+    <p class="intro" style="margin:0 0 4px">Introduce el código de acceso que te ha facilitado tu asesora.</p>
+    <form id="gateForm">
+      <input class="gateInput" id="pinInput" type="password" inputmode="numeric" autocomplete="off">
+      <button class="gateBtn" type="submit">Acceder</button>
+    </form>
+    <p class="gateError" id="gateError" style="display:none">Código incorrecto. Inténtalo de nuevo.</p>
+  </div>
+
+  <div class="container" id="mainContainer" style="display:none">
     <header class="header">
       <div>
         <div class="eyebrow">Informe fiscal</div>
@@ -220,169 +240,20 @@
 
     </div>
 
-    <footer class="footer">Informe generado el 13/6/2026, 14:33:36 · Esta página es una foto fija: para ver datos más recientes, pide a tu asesora que actualice el enlace.</footer>
+    <footer class="footer">Informe generado el 13/6/2026, 14:50:37 · Esta página es una foto fija: para ver datos más recientes, pide a tu asesora que actualice el enlace.</footer>
   </div>
 
 <script>
 (function(){
-  var DATA = {"2025":{"ok":true,"nombre":"María","actividad":"Abogado","ano":2025,"anoActual":2026,"actualizado":"2026-06-13T13:33:36.499Z","resumen":{"ingresos":0,"gastos":0,"beneficio":0,"retenciones":0},"trimestres":[{"trimestre":"1T","nombre":"Primer trimestre","plazo":"Plazo: 1 al 20 de abril","ingresos":0,"gastos":0,"beneficio":0,"modelo130":0,"topClientes":[],"topProveedores":[],"gastosPorCategoria":[]},{"trimestre":"2T","nombre":"Segundo trimestre","plazo":"Plazo: 1 al 20 de julio","ingresos":0,"gastos":0,"beneficio":0,"modelo130":0,"topClientes":[],"topProveedores":[],"gastosPorCategoria":[]},{"trimestre":"3T","nombre":"Tercer trimestre","plazo":"Plazo: 1 al 20 de octubre","ingresos":0,"gastos":0,"beneficio":0,"modelo130":0,"topClientes":[],"topProveedores":[],"gastosPorCategoria":[]},{"trimestre":"4T","nombre":"Cuarto trimestre","plazo":"Plazo: 1 al 30 de enero","ingresos":0,"gastos":0,"beneficio":0,"modelo130":0,"topClientes":[],"topProveedores":[],"gastosPorCategoria":[]}],"renta":{"baseImponible":0,"cuotaTotal":0,"cuotaDiferencial":0,"resultado":"CERO","tipoMedioEstatal":0,"tipoMedioAutonomico":0,"tipoMedioTotal":0,"pagosACuenta":0},"topClientes":[],"topProveedores":[],"gastosPorCategoria":[],"modelosFiscales":{"ejercicio":2026,"trimestrales":[{"id":"M130","label":"Modelo 130 (pago a cuenta del IRPF)","trimestres":[{"trimestre":"1T","plazo":"20 de abril","estado":"presentado","fecha":"04/05/2026"},{"trimestre":"2T","plazo":"20 de julio","estado":null,"fecha":null},{"trimestre":"3T","plazo":"20 de octubre","estado":null,"fecha":null},{"trimestre":"4T","plazo":"30 de enero","estado":null,"fecha":null}]},{"id":"M412","label":"Modelo 412 (IGIC ocasional)","trimestres":[{"trimestre":"1T","plazo":"20 de abril","estado":"no_presentar","fecha":null},{"trimestre":"2T","plazo":"20 de julio","estado":null,"fecha":null},{"trimestre":"3T","plazo":"20 de octubre","estado":null,"fecha":null},{"trimestre":"4T","plazo":"30 de enero","estado":null,"fecha":null}]},{"id":"M111","label":"Modelo 111 (retenciones a trabajadores/profesionales)","trimestres":[{"trimestre":"1T","plazo":"20 de abril","estado":"presentado","fecha":"04/05/2026"},{"trimestre":"2T","plazo":"20 de julio","estado":null,"fecha":null},{"trimestre":"3T","plazo":"20 de octubre","estado":null,"fecha":null},{"trimestre":"4T","plazo":"30 de enero","estado":null,"fecha":null}]}],"anuales":[{"id":"M425","label":"Modelo 425 (resumen anual de IGIC)","plazo":"31 de enero","estado":null,"fecha":null},{"id":"M415","label":"Modelo 415 (resumen anual de IGIC)","plazo":"28 de febrero","estado":null,"fecha":null},{"id":"M347","label":"Modelo 347 (operaciones con terceros)","plazo":"28 de febrero","estado":null,"fecha":null}]}},"2026":{"ok":true,"nombre":"María","actividad":"Abogado","ano":2026,"anoActual":2026,"actualizado":"2026-06-13T13:33:36.498Z","resumen":{"ingresos":14169.279999999999,"gastos":2297.0099999999998,"beneficio":11872.269999999999,"retenciones":840.22},"trimestres":[{"trimestre":"1T","nombre":"Primer trimestre","plazo":"Plazo: 1 al 20 de abril","ingresos":13769.279999999999,"gastos":1974.8499999999997,"beneficio":11794.429999999998,"modelo130":1460.7216999999998,"topClientes":[{"nombre":"Jesús Siverio Amador","importe":3000},{"nombre":"MÓNICA SANDRA ARNAY FERNÁNDEZ","importe":1800},{"nombre":"Ilustre Colegio De Abogados De Santa Cruz De Tenerife","importe":1751.45},{"nombre":"GONZÁLEZ BARRIOS SERVICIOS JURÍDICOS S.L.P.","importe":1650},{"nombre":"CAROLINA CABRERA VEGA","importe":1127.76},{"nombre":"GONZÁLEZ BARRIOS SERVICIOS JURÍDICOS S.L.P","importe":700},{"nombre":"Ayoze Beneharo Rodríguez Pérez","importe":600},{"nombre":"María Herrero Álvarez","importe":570.07},{"nombre":"Otros","importe":2570}],"topProveedores":[{"nombre":"MUTUALIDAD ABOGACIA C. GENERAL","importe":679.53},{"nombre":"ANTONIO FERNANDEZ BULLON","importe":550},{"nombre":"CAJA DE SEGUROS REUNIDOS, S.A. CASER","importe":421.40999999999997},{"nombre":"ILUSTRE COLEGIO DE ABOGADOS DE SANTA CRUZ DE TENERIFE","importe":97.89},{"nombre":"SOCIEDAD ESTATAL CORREOS Y TELEGRAFOS S.A., S.M.E","importe":82.5},{"nombre":"FRED OLSEN, S.A.","importe":56.78},{"nombre":"WEWI MOBILE S.L.","importe":29.61},{"nombre":"TENEGUIA TASCA BAR","importe":28.05},{"nombre":"Otros","importe":18.04}],"gastosPorCategoria":[{"categoria":"otros_servicios","label":"Otros servicios","importe":787.1700000000001,"pct":40.083816662508085,"color":"#2F6FE0"},{"categoria":"mutualidades","label":"Mutualidades alternativas","importe":679.53,"pct":34.60263467443388,"color":"#5B8DEF"},{"categoria":"seguros","label":"Seguros","importe":421.40999999999997,"pct":21.45879693045661,"color":"#E0A100"},{"categoria":"suministros","label":"Suministros (luz, agua, teléfono...)","importe":29.61,"pct":1.5077833395287732,"color":"#F0C36D"},{"categoria":"otros_consumos","label":"Otros consumos de explotación","importe":28.05,"pct":1.4283459194117558,"color":"#0a7d3c"},{"categoria":"servicios_profesionales","label":"Servicios profesionales","importe":18.04,"pct":0.9186224736608939,"color":"#7BC67E"}]},{"trimestre":"2T","nombre":"Segundo trimestre","plazo":"Plazo: 1 al 20 de julio","ingresos":400,"gastos":322.15999999999997,"beneficio":77.84000000000003,"modelo130":0,"topClientes":[{"nombre":"Aitana Badillo Gómez","importe":200},{"nombre":"MONTERO ARAMBURU & GOMEZ-VILLARES ATENCIA S.L.P","importe":200}],"topProveedores":[{"nombre":"Mutualidad de la Abogacía","importe":226.51},{"nombre":"CASER Seguros","importe":78.59},{"nombre":"WEWI MOBILE S.L.","importe":8.46},{"nombre":"Teneguía Tasca Bar","importe":8.04}],"gastosPorCategoria":[{"categoria":"mutualidades","label":"Mutualidades alternativas","importe":226.51,"pct":70.43221393034825,"color":"#2F6FE0"},{"categoria":"seguros","label":"Seguros","importe":78.59,"pct":24.437189054726367,"color":"#5B8DEF"},{"categoria":"suministros","label":"Suministros (luz, agua, teléfono...)","importe":8.46,"pct":2.6305970149253732,"color":"#E0A100"},{"categoria":"otros_servicios","label":"Otros servicios","importe":8.04,"pct":2.4999999999999996,"color":"#F0C36D"}]},{"trimestre":"3T","nombre":"Tercer trimestre","plazo":"Plazo: 1 al 20 de octubre","ingresos":0,"gastos":0,"beneficio":0,"modelo130":0,"topClientes":[],"topProveedores":[],"gastosPorCategoria":[]},{"trimestre":"4T","nombre":"Cuarto trimestre","plazo":"Plazo: 1 al 30 de enero","ingresos":0,"gastos":0,"beneficio":0,"modelo130":0,"topClientes":[],"topProveedores":[],"gastosPorCategoria":[]}],"renta":{"baseImponible":17328.569049166665,"cuotaTotal":2392.548726554166,"cuotaDiferencial":-900.3263067791672,"resultado":"A DEVOLVER","tipoMedioEstatal":0.07161169986852875,"tipoMedioAutonomico":0.06645790759679307,"tipoMedioTotal":0.1380696074653218,"pagosACuenta":3292.8750333333332},"topClientes":[{"nombre":"Jesús Siverio Amador","importe":3000},{"nombre":"MÓNICA SANDRA ARNAY FERNÁNDEZ","importe":1800},{"nombre":"Ilustre Colegio De Abogados De Santa Cruz De Tenerife","importe":1751.45},{"nombre":"GONZÁLEZ BARRIOS SERVICIOS JURÍDICOS S.L.P.","importe":1650},{"nombre":"CAROLINA CABRERA VEGA","importe":1127.76},{"nombre":"GONZÁLEZ BARRIOS SERVICIOS JURÍDICOS S.L.P","importe":700},{"nombre":"Ayoze Beneharo Rodríguez Pérez","importe":600},{"nombre":"María Herrero Álvarez","importe":570.07},{"nombre":"Otros","importe":2970}],"topProveedores":[{"nombre":"MUTUALIDAD ABOGACIA C. GENERAL","importe":679.53},{"nombre":"ANTONIO FERNANDEZ BULLON","importe":550},{"nombre":"CAJA DE SEGUROS REUNIDOS, S.A. CASER","importe":421.40999999999997},{"nombre":"Mutualidad de la Abogacía","importe":226.51},{"nombre":"ILUSTRE COLEGIO DE ABOGADOS DE SANTA CRUZ DE TENERIFE","importe":97.89},{"nombre":"SOCIEDAD ESTATAL CORREOS Y TELEGRAFOS S.A., S.M.E","importe":82.5},{"nombre":"CASER Seguros","importe":78.59},{"nombre":"FRED OLSEN, S.A.","importe":56.78},{"nombre":"Otros","importe":92.19999999999999}],"gastosPorCategoria":[{"categoria":"mutualidades","label":"Mutualidades alternativas","importe":906.04,"pct":39.64452767774709,"color":"#2F6FE0"},{"categoria":"otros_servicios","label":"Otros servicios","importe":795.21,"pct":34.79506959363965,"color":"#5B8DEF"},{"categoria":"seguros","label":"Seguros","importe":500,"pct":21.877912497101175,"color":"#E0A100"},{"categoria":"suministros","label":"Suministros (luz, agua, teléfono...)","importe":38.07,"pct":1.6657842575292834,"color":"#F0C36D"},{"categoria":"otros_consumos","label":"Otros consumos de explotación","importe":28.05,"pct":1.2273508910873758,"color":"#0a7d3c"},{"categoria":"servicios_profesionales","label":"Servicios profesionales","importe":18.04,"pct":0.7893550828954102,"color":"#7BC67E"}],"modelosFiscales":{"ejercicio":2026,"trimestrales":[{"id":"M130","label":"Modelo 130 (pago a cuenta del IRPF)","trimestres":[{"trimestre":"1T","plazo":"20 de abril","estado":"presentado","fecha":"04/05/2026"},{"trimestre":"2T","plazo":"20 de julio","estado":null,"fecha":null},{"trimestre":"3T","plazo":"20 de octubre","estado":null,"fecha":null},{"trimestre":"4T","plazo":"30 de enero","estado":null,"fecha":null}]},{"id":"M412","label":"Modelo 412 (IGIC ocasional)","trimestres":[{"trimestre":"1T","plazo":"20 de abril","estado":"no_presentar","fecha":null},{"trimestre":"2T","plazo":"20 de julio","estado":null,"fecha":null},{"trimestre":"3T","plazo":"20 de octubre","estado":null,"fecha":null},{"trimestre":"4T","plazo":"30 de enero","estado":null,"fecha":null}]},{"id":"M111","label":"Modelo 111 (retenciones a trabajadores/profesionales)","trimestres":[{"trimestre":"1T","plazo":"20 de abril","estado":"presentado","fecha":"04/05/2026"},{"trimestre":"2T","plazo":"20 de julio","estado":null,"fecha":null},{"trimestre":"3T","plazo":"20 de octubre","estado":null,"fecha":null},{"trimestre":"4T","plazo":"30 de enero","estado":null,"fecha":null}]}],"anuales":[{"id":"M425","label":"Modelo 425 (resumen anual de IGIC)","plazo":"31 de enero","estado":null,"fecha":null},{"id":"M415","label":"Modelo 415 (resumen anual de IGIC)","plazo":"28 de febrero","estado":null,"fecha":null},{"id":"M347","label":"Modelo 347 (operaciones con terceros)","plazo":"28 de febrero","estado":null,"fecha":null}]}}};
-  var anos = Object.keys(DATA).map(Number).sort(function(a,b){ return b - a; });
-  var idx = anos.indexOf(2026);
-  if (idx === -1) idx = 0;
-  var periodoSel = 'ANUAL';
+  var EXPIRA = null;
+  var PIN_PROTECTED = false;
+  var PLAIN_DATA = {"2025":{"ok":true,"nombre":"María","actividad":"Abogado","ano":2025,"anoActual":2026,"actualizado":"2026-06-13T13:50:37.313Z","resumen":{"ingresos":0,"gastos":0,"beneficio":0,"retenciones":0},"trimestres":[{"trimestre":"1T","nombre":"Primer trimestre","plazo":"Plazo: 1 al 20 de abril","ingresos":0,"gastos":0,"beneficio":0,"modelo130":0,"topClientes":[],"topProveedores":[],"gastosPorCategoria":[]},{"trimestre":"2T","nombre":"Segundo trimestre","plazo":"Plazo: 1 al 20 de julio","ingresos":0,"gastos":0,"beneficio":0,"modelo130":0,"topClientes":[],"topProveedores":[],"gastosPorCategoria":[]},{"trimestre":"3T","nombre":"Tercer trimestre","plazo":"Plazo: 1 al 20 de octubre","ingresos":0,"gastos":0,"beneficio":0,"modelo130":0,"topClientes":[],"topProveedores":[],"gastosPorCategoria":[]},{"trimestre":"4T","nombre":"Cuarto trimestre","plazo":"Plazo: 1 al 30 de enero","ingresos":0,"gastos":0,"beneficio":0,"modelo130":0,"topClientes":[],"topProveedores":[],"gastosPorCategoria":[]}],"renta":{"baseImponible":0,"cuotaTotal":0,"cuotaDiferencial":0,"resultado":"CERO","tipoMedioEstatal":0,"tipoMedioAutonomico":0,"tipoMedioTotal":0,"pagosACuenta":0},"topClientes":[],"topProveedores":[],"gastosPorCategoria":[],"modelosFiscales":{"ejercicio":2026,"trimestrales":[{"id":"M130","label":"Modelo 130 (pago a cuenta del IRPF)","trimestres":[{"trimestre":"1T","plazo":"20 de abril","estado":"presentado","fecha":"04/05/2026"},{"trimestre":"2T","plazo":"20 de julio","estado":null,"fecha":null},{"trimestre":"3T","plazo":"20 de octubre","estado":null,"fecha":null},{"trimestre":"4T","plazo":"30 de enero","estado":null,"fecha":null}]},{"id":"M412","label":"Modelo 412 (IGIC ocasional)","trimestres":[{"trimestre":"1T","plazo":"20 de abril","estado":"no_presentar","fecha":null},{"trimestre":"2T","plazo":"20 de julio","estado":null,"fecha":null},{"trimestre":"3T","plazo":"20 de octubre","estado":null,"fecha":null},{"trimestre":"4T","plazo":"30 de enero","estado":null,"fecha":null}]},{"id":"M111","label":"Modelo 111 (retenciones a trabajadores/profesionales)","trimestres":[{"trimestre":"1T","plazo":"20 de abril","estado":"presentado","fecha":"04/05/2026"},{"trimestre":"2T","plazo":"20 de julio","estado":null,"fecha":null},{"trimestre":"3T","plazo":"20 de octubre","estado":null,"fecha":null},{"trimestre":"4T","plazo":"30 de enero","estado":null,"fecha":null}]}],"anuales":[{"id":"M425","label":"Modelo 425 (resumen anual de IGIC)","plazo":"31 de enero","estado":null,"fecha":null},{"id":"M415","label":"Modelo 415 (resumen anual de IGIC)","plazo":"28 de febrero","estado":null,"fecha":null},{"id":"M347","label":"Modelo 347 (operaciones con terceros)","plazo":"28 de febrero","estado":null,"fecha":null}]}},"2026":{"ok":true,"nombre":"María","actividad":"Abogado","ano":2026,"anoActual":2026,"actualizado":"2026-06-13T13:50:37.311Z","resumen":{"ingresos":14169.279999999999,"gastos":2297.0099999999998,"beneficio":11872.269999999999,"retenciones":840.22},"trimestres":[{"trimestre":"1T","nombre":"Primer trimestre","plazo":"Plazo: 1 al 20 de abril","ingresos":13769.279999999999,"gastos":1974.8499999999997,"beneficio":11794.429999999998,"modelo130":1460.7216999999998,"topClientes":[{"nombre":"Jesús Siverio Amador","importe":3000},{"nombre":"MÓNICA SANDRA ARNAY FERNÁNDEZ","importe":1800},{"nombre":"Ilustre Colegio De Abogados De Santa Cruz De Tenerife","importe":1751.45},{"nombre":"GONZÁLEZ BARRIOS SERVICIOS JURÍDICOS S.L.P.","importe":1650},{"nombre":"CAROLINA CABRERA VEGA","importe":1127.76},{"nombre":"GONZÁLEZ BARRIOS SERVICIOS JURÍDICOS S.L.P","importe":700},{"nombre":"Ayoze Beneharo Rodríguez Pérez","importe":600},{"nombre":"María Herrero Álvarez","importe":570.07},{"nombre":"Otros","importe":2570}],"topProveedores":[{"nombre":"MUTUALIDAD ABOGACIA C. GENERAL","importe":679.53},{"nombre":"ANTONIO FERNANDEZ BULLON","importe":550},{"nombre":"CAJA DE SEGUROS REUNIDOS, S.A. CASER","importe":421.40999999999997},{"nombre":"ILUSTRE COLEGIO DE ABOGADOS DE SANTA CRUZ DE TENERIFE","importe":97.89},{"nombre":"SOCIEDAD ESTATAL CORREOS Y TELEGRAFOS S.A., S.M.E","importe":82.5},{"nombre":"FRED OLSEN, S.A.","importe":56.78},{"nombre":"WEWI MOBILE S.L.","importe":29.61},{"nombre":"TENEGUIA TASCA BAR","importe":28.05},{"nombre":"Otros","importe":18.04}],"gastosPorCategoria":[{"categoria":"otros_servicios","label":"Otros servicios","importe":787.1700000000001,"pct":40.083816662508085,"color":"#2F6FE0"},{"categoria":"mutualidades","label":"Mutualidades alternativas","importe":679.53,"pct":34.60263467443388,"color":"#5B8DEF"},{"categoria":"seguros","label":"Seguros","importe":421.40999999999997,"pct":21.45879693045661,"color":"#E0A100"},{"categoria":"suministros","label":"Suministros (luz, agua, teléfono...)","importe":29.61,"pct":1.5077833395287732,"color":"#F0C36D"},{"categoria":"otros_consumos","label":"Otros consumos de explotación","importe":28.05,"pct":1.4283459194117558,"color":"#0a7d3c"},{"categoria":"servicios_profesionales","label":"Servicios profesionales","importe":18.04,"pct":0.9186224736608939,"color":"#7BC67E"}]},{"trimestre":"2T","nombre":"Segundo trimestre","plazo":"Plazo: 1 al 20 de julio","ingresos":400,"gastos":322.15999999999997,"beneficio":77.84000000000003,"modelo130":0,"topClientes":[{"nombre":"Aitana Badillo Gómez","importe":200},{"nombre":"MONTERO ARAMBURU & GOMEZ-VILLARES ATENCIA S.L.P","importe":200}],"topProveedores":[{"nombre":"Mutualidad de la Abogacía","importe":226.51},{"nombre":"CASER Seguros","importe":78.59},{"nombre":"WEWI MOBILE S.L.","importe":8.46},{"nombre":"Teneguía Tasca Bar","importe":8.04}],"gastosPorCategoria":[{"categoria":"mutualidades","label":"Mutualidades alternativas","importe":226.51,"pct":70.43221393034825,"color":"#2F6FE0"},{"categoria":"seguros","label":"Seguros","importe":78.59,"pct":24.437189054726367,"color":"#5B8DEF"},{"categoria":"suministros","label":"Suministros (luz, agua, teléfono...)","importe":8.46,"pct":2.6305970149253732,"color":"#E0A100"},{"categoria":"otros_servicios","label":"Otros servicios","importe":8.04,"pct":2.4999999999999996,"color":"#F0C36D"}]},{"trimestre":"3T","nombre":"Tercer trimestre","plazo":"Plazo: 1 al 20 de octubre","ingresos":0,"gastos":0,"beneficio":0,"modelo130":0,"topClientes":[],"topProveedores":[],"gastosPorCategoria":[]},{"trimestre":"4T","nombre":"Cuarto trimestre","plazo":"Plazo: 1 al 30 de enero","ingresos":0,"gastos":0,"beneficio":0,"modelo130":0,"topClientes":[],"topProveedores":[],"gastosPorCategoria":[]}],"renta":{"baseImponible":17328.569049166665,"cuotaTotal":2392.548726554166,"cuotaDiferencial":-900.3263067791672,"resultado":"A DEVOLVER","tipoMedioEstatal":0.07161169986852875,"tipoMedioAutonomico":0.06645790759679307,"tipoMedioTotal":0.1380696074653218,"pagosACuenta":3292.8750333333332},"topClientes":[{"nombre":"Jesús Siverio Amador","importe":3000},{"nombre":"MÓNICA SANDRA ARNAY FERNÁNDEZ","importe":1800},{"nombre":"Ilustre Colegio De Abogados De Santa Cruz De Tenerife","importe":1751.45},{"nombre":"GONZÁLEZ BARRIOS SERVICIOS JURÍDICOS S.L.P.","importe":1650},{"nombre":"CAROLINA CABRERA VEGA","importe":1127.76},{"nombre":"GONZÁLEZ BARRIOS SERVICIOS JURÍDICOS S.L.P","importe":700},{"nombre":"Ayoze Beneharo Rodríguez Pérez","importe":600},{"nombre":"María Herrero Álvarez","importe":570.07},{"nombre":"Otros","importe":2970}],"topProveedores":[{"nombre":"MUTUALIDAD ABOGACIA C. GENERAL","importe":679.53},{"nombre":"ANTONIO FERNANDEZ BULLON","importe":550},{"nombre":"CAJA DE SEGUROS REUNIDOS, S.A. CASER","importe":421.40999999999997},{"nombre":"Mutualidad de la Abogacía","importe":226.51},{"nombre":"ILUSTRE COLEGIO DE ABOGADOS DE SANTA CRUZ DE TENERIFE","importe":97.89},{"nombre":"SOCIEDAD ESTATAL CORREOS Y TELEGRAFOS S.A., S.M.E","importe":82.5},{"nombre":"CASER Seguros","importe":78.59},{"nombre":"FRED OLSEN, S.A.","importe":56.78},{"nombre":"Otros","importe":92.19999999999999}],"gastosPorCategoria":[{"categoria":"mutualidades","label":"Mutualidades alternativas","importe":906.04,"pct":39.64452767774709,"color":"#2F6FE0"},{"categoria":"otros_servicios","label":"Otros servicios","importe":795.21,"pct":34.79506959363965,"color":"#5B8DEF"},{"categoria":"seguros","label":"Seguros","importe":500,"pct":21.877912497101175,"color":"#E0A100"},{"categoria":"suministros","label":"Suministros (luz, agua, teléfono...)","importe":38.07,"pct":1.6657842575292834,"color":"#F0C36D"},{"categoria":"otros_consumos","label":"Otros consumos de explotación","importe":28.05,"pct":1.2273508910873758,"color":"#0a7d3c"},{"categoria":"servicios_profesionales","label":"Servicios profesionales","importe":18.04,"pct":0.7893550828954102,"color":"#7BC67E"}],"modelosFiscales":{"ejercicio":2026,"trimestrales":[{"id":"M130","label":"Modelo 130 (pago a cuenta del IRPF)","trimestres":[{"trimestre":"1T","plazo":"20 de abril","estado":"presentado","fecha":"04/05/2026"},{"trimestre":"2T","plazo":"20 de julio","estado":null,"fecha":null},{"trimestre":"3T","plazo":"20 de octubre","estado":null,"fecha":null},{"trimestre":"4T","plazo":"30 de enero","estado":null,"fecha":null}]},{"id":"M412","label":"Modelo 412 (IGIC ocasional)","trimestres":[{"trimestre":"1T","plazo":"20 de abril","estado":"no_presentar","fecha":null},{"trimestre":"2T","plazo":"20 de julio","estado":null,"fecha":null},{"trimestre":"3T","plazo":"20 de octubre","estado":null,"fecha":null},{"trimestre":"4T","plazo":"30 de enero","estado":null,"fecha":null}]},{"id":"M111","label":"Modelo 111 (retenciones a trabajadores/profesionales)","trimestres":[{"trimestre":"1T","plazo":"20 de abril","estado":"presentado","fecha":"04/05/2026"},{"trimestre":"2T","plazo":"20 de julio","estado":null,"fecha":null},{"trimestre":"3T","plazo":"20 de octubre","estado":null,"fecha":null},{"trimestre":"4T","plazo":"30 de enero","estado":null,"fecha":null}]}],"anuales":[{"id":"M425","label":"Modelo 425 (resumen anual de IGIC)","plazo":"31 de enero","estado":null,"fecha":null},{"id":"M415","label":"Modelo 415 (resumen anual de IGIC)","plazo":"28 de febrero","estado":null,"fecha":null},{"id":"M347","label":"Modelo 347 (operaciones con terceros)","plazo":"28 de febrero","estado":null,"fecha":null}]}}};
 
   function fmtEUR(n) {
     return Number(n || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
   }
   function fmtEURde100(n) {
     return (Number(n || 0) * 100).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
-  }
-
-  function render() {
-    var ano = anos[idx];
-    var d = DATA[ano];
-    var res = d.resumen;
-    var r = d.renta;
-
-    document.getElementById('anoLabel').textContent = ano;
-    document.getElementById('prevAno').disabled = idx >= anos.length - 1;
-    document.getElementById('nextAno').disabled = idx <= 0;
-
-    // Periodo seleccionado: año completo o un trimestre concreto
-    var trimestreSel = periodoSel !== 'ANUAL' ? d.trimestres.find(function(t){ return t.trimestre === periodoSel; }) : null;
-    var resumenP = trimestreSel ? { ingresos: trimestreSel.ingresos, gastos: trimestreSel.gastos, beneficio: trimestreSel.beneficio } : res;
-    var topClientesP = trimestreSel ? trimestreSel.topClientes : d.topClientes;
-    var topProveedoresP = trimestreSel ? trimestreSel.topProveedores : d.topProveedores;
-    var labelPeriodo = trimestreSel ? (trimestreSel.nombre.toLowerCase() + ' de ' + ano) : ('año ' + ano);
-    document.getElementById('lblPeriodo1').textContent = labelPeriodo;
-    document.getElementById('lblPeriodo2').textContent = labelPeriodo;
-    document.getElementById('lblPeriodo3').textContent = labelPeriodo;
-
-    // Resumen del periodo
-    document.getElementById('introResumen').textContent =
-      'Durante ' + labelPeriodo + ' has facturado ' + fmtEUR(resumenP.ingresos) + ' y has tenido ' + fmtEUR(resumenP.gastos) + ' en gastos.';
-
-    var maxVal = Math.max(resumenP.ingresos, resumenP.gastos, 1);
-    document.getElementById('barIngresos').style.width = Math.min(100, (resumenP.ingresos / maxVal) * 100) + '%';
-    document.getElementById('barGastos').style.width = Math.min(100, (resumenP.gastos / maxVal) * 100) + '%';
-    document.getElementById('vIngresos').textContent = fmtEUR(resumenP.ingresos);
-    document.getElementById('vGastos').textContent = fmtEUR(resumenP.gastos);
-
-    var boxBeneficio = document.getElementById('boxBeneficio');
-    var vBeneficio = document.getElementById('vBeneficio');
-    vBeneficio.textContent = fmtEUR(resumenP.beneficio);
-    if (resumenP.beneficio >= 0) {
-      boxBeneficio.className = 'resultBox ok';
-      vBeneficio.className = 'resultValor ok';
-    } else {
-      boxBeneficio.className = 'resultBox warn';
-      vBeneficio.className = 'resultValor warn';
-    }
-
-    // Tabla de trimestres
-    var tbody = document.getElementById('tbodyTrimestres');
-    tbody.innerHTML = '';
-    d.trimestres.forEach(function(t){
-      var tr = document.createElement('tr');
-      if (t.trimestre === periodoSel) tr.className = 'trRowActive';
-      tr.innerHTML = '<td>' + t.nombre + '</td><td>' + (t.plazo || '') + '</td><td>' + fmtEUR(t.beneficio) + '</td><td style="font-weight:700">' + fmtEUR(t.modelo130) + '</td>';
-      tbody.appendChild(tr);
-    });
-
-    // Previsión de la Renta
-    var aDevolver = r.cuotaDiferencial < 0;
-    var aIngresar = r.cuotaDiferencial > 0;
-    var boxRenta = document.getElementById('boxRenta');
-    var lbl = document.getElementById('lblRentaResultado');
-    var val = document.getElementById('vRentaResultado');
-    var intro = document.getElementById('introRenta');
-    if (aDevolver) {
-      boxRenta.className = 'resultBox ok';
-      val.className = 'resultValor ok';
-      lbl.textContent = 'Hacienda te devolvería aproximadamente';
-      intro.textContent = 'Según los datos hasta ahora, en tu próxima declaración de la Renta Hacienda te devolvería dinero.';
-    } else if (aIngresar) {
-      boxRenta.className = 'resultBox warn';
-      val.className = 'resultValor warn';
-      lbl.textContent = 'Tendrías que pagar aproximadamente';
-      intro.textContent = 'Según los datos hasta ahora, en tu próxima declaración de la Renta tendrías que pagar a Hacienda.';
-    } else {
-      boxRenta.className = 'resultBox neutral';
-      val.className = 'resultValor';
-      lbl.textContent = 'Resultado estimado';
-      intro.textContent = 'Según los datos hasta ahora, tu declaración de la Renta no tendría ni a pagar ni a devolver.';
-    }
-    val.textContent = fmtEUR(Math.abs(r.cuotaDiferencial));
-
-    document.getElementById('vBase').textContent = fmtEUR(r.baseImponible);
-    document.getElementById('vCuota').textContent = fmtEUR(r.cuotaTotal);
-    document.getElementById('vAdelantado').textContent = fmtEUR(r.pagosACuenta);
-
-    // Barra apilada "de cada 100 €"
-    var pctEstatal = Math.max(0, Math.min(100, r.tipoMedioEstatal));
-    var pctAutonomico = Math.max(0, Math.min(100 - pctEstatal, r.tipoMedioAutonomico));
-    var pctQueda = Math.max(0, 100 - pctEstatal - pctAutonomico);
-    document.getElementById('stackBar').innerHTML =
-      '<div class="stackSeg" style="width:' + pctEstatal + '%;background:#2F6FE0" title="Administración estatal"></div>' +
-      '<div class="stackSeg" style="width:' + pctAutonomico + '%;background:#E0A100" title="Administración autonómica"></div>' +
-      '<div class="stackSeg" style="width:' + pctQueda + '%;background:#EAF7EF" title="Lo que te queda"></div>';
-    document.getElementById('stackLegend').innerHTML =
-      '<div class="stackLegendItem"><span class="legendDot" style="background:#2F6FE0"></span> Estatal: ' + fmtEURde100(pctEstatal) + '</div>' +
-      '<div class="stackLegendItem"><span class="legendDot" style="background:#E0A100"></span> Autonómica: ' + fmtEURde100(pctAutonomico) + '</div>' +
-      '<div class="stackLegendItem"><span class="legendDot" style="background:#EAF7EF;border:1px solid #e8eaf0"></span> Te queda: ' + fmtEURde100(pctQueda) + '</div>';
-
-    // Gastos por categoría (donut)
-    var gastosPorCategoriaP = trimestreSel ? trimestreSel.gastosPorCategoria : d.gastosPorCategoria;
-    var wrapCat = document.getElementById('gastosCategoriaWrap');
-    if (gastosPorCategoriaP && gastosPorCategoriaP.length > 0) {
-      wrapCat.innerHTML = '<div class="donutRow">' + buildDonutSVG(gastosPorCategoriaP) + buildLegendHTML(gastosPorCategoriaP) + '</div>';
-    } else {
-      wrapCat.innerHTML = '<div class="topEmpty">Sin gastos registrados en este periodo.</div>';
-    }
-
-    // Top clientes / proveedores (del periodo seleccionado, de mayor a menor importe)
-    renderTopRows('topClientes', topClientesP || []);
-    renderTopRows('topProveedores', topProveedoresP || []);
-
-    // Modelos y plazos: tarjetas con progreso por trimestre
-    var mf = d.modelosFiscales || { ejercicio: ano, trimestrales: [], anuales: [] };
-    var cardModelos = document.getElementById('cardModelos');
-    if (mf.trimestrales.length === 0 && mf.anuales.length === 0) {
-      cardModelos.style.display = 'none';
-    } else {
-      cardModelos.style.display = '';
-      document.getElementById('anoControl').textContent = mf.ejercicio;
-
-      var html = '';
-      mf.trimestrales.forEach(function(m){
-        html += '<div class="modeloCard"><div class="modeloCardTitle">' + m.label + '</div><div class="segmentsRow">';
-        m.trimestres.forEach(function(t){
-          var cls, label, sub;
-          if (t.estado === 'presentado') {
-            cls = 'segOk'; label = '✓ ' + t.trimestre; sub = 'Presentado' + (t.fecha ? ' (' + t.fecha + ')' : '');
-          } else if (t.estado === 'no_presentar') {
-            cls = 'segNo'; label = t.trimestre; sub = 'No aplica';
-          } else {
-            cls = 'segPend'; label = t.trimestre; sub = t.plazo;
-          }
-          if (t.trimestre === periodoSel) cls += ' segActive';
-          html += '<div class="segment ' + cls + '"><div class="segLabel">' + label + '</div><div>' + sub + '</div></div>';
-        });
-        html += '</div></div>';
-      });
-      mf.anuales.forEach(function(m){
-        var cls, sub;
-        if (m.estado === 'presentado') {
-          cls = 'segOk'; sub = '✓ Presentado' + (m.fecha ? ' (' + m.fecha + ')' : '');
-        } else if (m.estado === 'no_presentar') {
-          cls = 'segNo'; sub = 'No aplica este año';
-        } else {
-          cls = 'segPend'; sub = 'Pendiente — plazo: ' + m.plazo;
-        }
-        html += '<div class="modeloCard"><div class="modeloCardTitle">' + m.label + '</div><div class="segmentsRow"><div class="segment ' + cls + '" style="flex:1 1 100%">' + sub + '</div></div></div>';
-      });
-      document.getElementById('modeloCards').innerHTML = html;
-    }
   }
 
   function buildDonutSVG(items) {
@@ -448,23 +319,246 @@
     });
   }
 
-  document.getElementById('prevAno').addEventListener('click', function(){
-    if (idx < anos.length - 1) { idx++; render(); }
-  });
-  document.getElementById('nextAno').addEventListener('click', function(){
-    if (idx > 0) { idx--; render(); }
-  });
+  function iniciar(DATA) {
+    var anos = Object.keys(DATA).map(Number).sort(function(a,b){ return b - a; });
+    var idx = anos.indexOf(2026);
+    if (idx === -1) idx = 0;
+    var periodoSel = 'ANUAL';
 
-  var periodBtns = document.querySelectorAll('.periodBtn');
-  periodBtns.forEach(function(btn){
-    btn.addEventListener('click', function(){
-      periodoSel = btn.getAttribute('data-periodo');
-      periodBtns.forEach(function(b){ b.classList.toggle('active', b === btn); });
-      render();
+    function render() {
+      var ano = anos[idx];
+      var d = DATA[ano];
+      var res = d.resumen;
+      var r = d.renta;
+
+      document.getElementById('anoLabel').textContent = ano;
+      document.getElementById('prevAno').disabled = idx >= anos.length - 1;
+      document.getElementById('nextAno').disabled = idx <= 0;
+
+      // Periodo seleccionado: año completo o un trimestre concreto
+      var trimestreSel = periodoSel !== 'ANUAL' ? d.trimestres.find(function(t){ return t.trimestre === periodoSel; }) : null;
+      var resumenP = trimestreSel ? { ingresos: trimestreSel.ingresos, gastos: trimestreSel.gastos, beneficio: trimestreSel.beneficio } : res;
+      var topClientesP = trimestreSel ? trimestreSel.topClientes : d.topClientes;
+      var topProveedoresP = trimestreSel ? trimestreSel.topProveedores : d.topProveedores;
+      var labelPeriodo = trimestreSel ? (trimestreSel.nombre.toLowerCase() + ' de ' + ano) : ('año ' + ano);
+      document.getElementById('lblPeriodo1').textContent = labelPeriodo;
+      document.getElementById('lblPeriodo2').textContent = labelPeriodo;
+      document.getElementById('lblPeriodo3').textContent = labelPeriodo;
+
+      // Resumen del periodo
+      document.getElementById('introResumen').textContent =
+        'Durante ' + labelPeriodo + ' has facturado ' + fmtEUR(resumenP.ingresos) + ' y has tenido ' + fmtEUR(resumenP.gastos) + ' en gastos.';
+
+      var maxVal = Math.max(resumenP.ingresos, resumenP.gastos, 1);
+      document.getElementById('barIngresos').style.width = Math.min(100, (resumenP.ingresos / maxVal) * 100) + '%';
+      document.getElementById('barGastos').style.width = Math.min(100, (resumenP.gastos / maxVal) * 100) + '%';
+      document.getElementById('vIngresos').textContent = fmtEUR(resumenP.ingresos);
+      document.getElementById('vGastos').textContent = fmtEUR(resumenP.gastos);
+
+      var boxBeneficio = document.getElementById('boxBeneficio');
+      var vBeneficio = document.getElementById('vBeneficio');
+      vBeneficio.textContent = fmtEUR(resumenP.beneficio);
+      if (resumenP.beneficio >= 0) {
+        boxBeneficio.className = 'resultBox ok';
+        vBeneficio.className = 'resultValor ok';
+      } else {
+        boxBeneficio.className = 'resultBox warn';
+        vBeneficio.className = 'resultValor warn';
+      }
+
+      // Tabla de trimestres
+      var tbody = document.getElementById('tbodyTrimestres');
+      tbody.innerHTML = '';
+      d.trimestres.forEach(function(t){
+        var tr = document.createElement('tr');
+        if (t.trimestre === periodoSel) tr.className = 'trRowActive';
+        tr.innerHTML = '<td>' + t.nombre + '</td><td>' + (t.plazo || '') + '</td><td>' + fmtEUR(t.beneficio) + '</td><td style="font-weight:700">' + fmtEUR(t.modelo130) + '</td>';
+        tbody.appendChild(tr);
+      });
+
+      // Previsión de la Renta
+      var aDevolver = r.cuotaDiferencial < 0;
+      var aIngresar = r.cuotaDiferencial > 0;
+      var boxRenta = document.getElementById('boxRenta');
+      var lbl = document.getElementById('lblRentaResultado');
+      var val = document.getElementById('vRentaResultado');
+      var intro = document.getElementById('introRenta');
+      if (aDevolver) {
+        boxRenta.className = 'resultBox ok';
+        val.className = 'resultValor ok';
+        lbl.textContent = 'Hacienda te devolvería aproximadamente';
+        intro.textContent = 'Según los datos hasta ahora, en tu próxima declaración de la Renta Hacienda te devolvería dinero.';
+      } else if (aIngresar) {
+        boxRenta.className = 'resultBox warn';
+        val.className = 'resultValor warn';
+        lbl.textContent = 'Tendrías que pagar aproximadamente';
+        intro.textContent = 'Según los datos hasta ahora, en tu próxima declaración de la Renta tendrías que pagar a Hacienda.';
+      } else {
+        boxRenta.className = 'resultBox neutral';
+        val.className = 'resultValor';
+        lbl.textContent = 'Resultado estimado';
+        intro.textContent = 'Según los datos hasta ahora, tu declaración de la Renta no tendría ni a pagar ni a devolver.';
+      }
+      val.textContent = fmtEUR(Math.abs(r.cuotaDiferencial));
+
+      document.getElementById('vBase').textContent = fmtEUR(r.baseImponible);
+      document.getElementById('vCuota').textContent = fmtEUR(r.cuotaTotal);
+      document.getElementById('vAdelantado').textContent = fmtEUR(r.pagosACuenta);
+
+      // Barra apilada "de cada 100 €"
+      var pctEstatal = Math.max(0, Math.min(100, r.tipoMedioEstatal));
+      var pctAutonomico = Math.max(0, Math.min(100 - pctEstatal, r.tipoMedioAutonomico));
+      var pctQueda = Math.max(0, 100 - pctEstatal - pctAutonomico);
+      document.getElementById('stackBar').innerHTML =
+        '<div class="stackSeg" style="width:' + pctEstatal + '%;background:#2F6FE0" title="Administración estatal"></div>' +
+        '<div class="stackSeg" style="width:' + pctAutonomico + '%;background:#E0A100" title="Administración autonómica"></div>' +
+        '<div class="stackSeg" style="width:' + pctQueda + '%;background:#EAF7EF" title="Lo que te queda"></div>';
+      document.getElementById('stackLegend').innerHTML =
+        '<div class="stackLegendItem"><span class="legendDot" style="background:#2F6FE0"></span> Estatal: ' + fmtEURde100(pctEstatal) + '</div>' +
+        '<div class="stackLegendItem"><span class="legendDot" style="background:#E0A100"></span> Autonómica: ' + fmtEURde100(pctAutonomico) + '</div>' +
+        '<div class="stackLegendItem"><span class="legendDot" style="background:#EAF7EF;border:1px solid #e8eaf0"></span> Te queda: ' + fmtEURde100(pctQueda) + '</div>';
+
+      // Gastos por categoría (donut)
+      var gastosPorCategoriaP = trimestreSel ? trimestreSel.gastosPorCategoria : d.gastosPorCategoria;
+      var wrapCat = document.getElementById('gastosCategoriaWrap');
+      if (gastosPorCategoriaP && gastosPorCategoriaP.length > 0) {
+        wrapCat.innerHTML = '<div class="donutRow">' + buildDonutSVG(gastosPorCategoriaP) + buildLegendHTML(gastosPorCategoriaP) + '</div>';
+      } else {
+        wrapCat.innerHTML = '<div class="topEmpty">Sin gastos registrados en este periodo.</div>';
+      }
+
+      // Top clientes / proveedores (del periodo seleccionado, de mayor a menor importe)
+      renderTopRows('topClientes', topClientesP || []);
+      renderTopRows('topProveedores', topProveedoresP || []);
+
+      // Modelos y plazos: tarjetas con progreso por trimestre
+      var mf = d.modelosFiscales || { ejercicio: ano, trimestrales: [], anuales: [] };
+      var cardModelos = document.getElementById('cardModelos');
+      if (mf.trimestrales.length === 0 && mf.anuales.length === 0) {
+        cardModelos.style.display = 'none';
+      } else {
+        cardModelos.style.display = '';
+        document.getElementById('anoControl').textContent = mf.ejercicio;
+
+        var html = '';
+        mf.trimestrales.forEach(function(m){
+          html += '<div class="modeloCard"><div class="modeloCardTitle">' + m.label + '</div><div class="segmentsRow">';
+          m.trimestres.forEach(function(t){
+            var cls, label, sub;
+            if (t.estado === 'presentado') {
+              cls = 'segOk'; label = '✓ ' + t.trimestre; sub = 'Presentado' + (t.fecha ? ' (' + t.fecha + ')' : '');
+            } else if (t.estado === 'no_presentar') {
+              cls = 'segNo'; label = t.trimestre; sub = 'No aplica';
+            } else {
+              cls = 'segPend'; label = t.trimestre; sub = t.plazo;
+            }
+            if (t.trimestre === periodoSel) cls += ' segActive';
+            html += '<div class="segment ' + cls + '"><div class="segLabel">' + label + '</div><div>' + sub + '</div></div>';
+          });
+          html += '</div></div>';
+        });
+        mf.anuales.forEach(function(m){
+          var cls, sub;
+          if (m.estado === 'presentado') {
+            cls = 'segOk'; sub = '✓ Presentado' + (m.fecha ? ' (' + m.fecha + ')' : '');
+          } else if (m.estado === 'no_presentar') {
+            cls = 'segNo'; sub = 'No aplica este año';
+          } else {
+            cls = 'segPend'; sub = 'Pendiente — plazo: ' + m.plazo;
+          }
+          html += '<div class="modeloCard"><div class="modeloCardTitle">' + m.label + '</div><div class="segmentsRow"><div class="segment ' + cls + '" style="flex:1 1 100%">' + sub + '</div></div></div>';
+        });
+        document.getElementById('modeloCards').innerHTML = html;
+      }
+    }
+
+    document.getElementById('prevAno').addEventListener('click', function(){
+      if (idx < anos.length - 1) { idx++; render(); }
+    });
+    document.getElementById('nextAno').addEventListener('click', function(){
+      if (idx > 0) { idx--; render(); }
+    });
+
+    var periodBtns = document.querySelectorAll('.periodBtn');
+    periodBtns.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        periodoSel = btn.getAttribute('data-periodo');
+        periodBtns.forEach(function(b){ b.classList.toggle('active', b === btn); });
+        render();
+      });
+    });
+
+    render();
+  }
+
+  function mostrarApp() {
+    document.getElementById('mainContainer').style.display = '';
+  }
+
+  // ── Comprobación de caducidad ──────────────────────────────────────────
+  if (EXPIRA) {
+    var hoy = new Date();
+    var fin = new Date(EXPIRA + 'T23:59:59');
+    if (hoy > fin) {
+      document.getElementById('expiredCard').style.display = '';
+      return;
+    }
+  }
+
+  // ── Sin PIN: mostrar directamente ──────────────────────────────────────
+  if (!PIN_PROTECTED) {
+    mostrarApp();
+    iniciar(PLAIN_DATA);
+    return;
+  }
+
+  // ── Con PIN: pedir código y descifrar con Web Crypto ───────────────────
+  function b64ToBytes(b64) {
+    var bin = atob(b64);
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+  }
+
+  function descifrar(pin) {
+    var salt = b64ToBytes(PIN_SALT_B64);
+    var iv = b64ToBytes(PIN_IV_B64);
+    var datos = b64ToBytes(PIN_DATA_B64);
+    var enc = new TextEncoder();
+    return crypto.subtle.importKey('raw', enc.encode(pin), { name: 'PBKDF2' }, false, ['deriveKey'])
+      .then(function(keyMaterial){
+        return crypto.subtle.deriveKey(
+          { name: 'PBKDF2', salt: salt, iterations: PIN_ITER, hash: 'SHA-256' },
+          keyMaterial,
+          { name: 'AES-GCM', length: 256 },
+          false,
+          ['decrypt']
+        );
+      })
+      .then(function(key){
+        return crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, key, datos);
+      })
+      .then(function(plainBuf){
+        return JSON.parse(new TextDecoder().decode(plainBuf));
+      });
+  }
+
+  var gateCard = document.getElementById('gateCard');
+  var gateError = document.getElementById('gateError');
+  gateCard.style.display = '';
+
+  document.getElementById('gateForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    gateError.style.display = 'none';
+    var pin = document.getElementById('pinInput').value;
+    descifrar(pin).then(function(data){
+      gateCard.style.display = 'none';
+      mostrarApp();
+      iniciar(data);
+    }).catch(function(){
+      gateError.style.display = '';
     });
   });
-
-  render();
 })();
 </script>
 </body>
