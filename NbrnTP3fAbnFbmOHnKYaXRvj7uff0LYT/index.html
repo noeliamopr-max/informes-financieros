@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Informe fiscal — Cliente</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; background: #f7f7f4; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #1a1a18; }
+  .container { max-width: 1320px; margin: 0 auto; padding: clamp(16px, 5vw, 32px) clamp(12px, 4vw, 24px) 48px; display: flex; flex-direction: column; gap: 16px; }
+  .header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; }
+  .eyebrow { font-size: 13px; color: #9a9a93; letter-spacing: 0.5px; text-transform: uppercase; }
+  h1 { margin: 4px 0 0; font-size: clamp(20px, 5.5vw, 24px); }
+  .actividad { color: #6b6b67; font-size: 13px; margin-top: 2px; }
+  .yearSwitch { display: flex; align-items: center; gap: 10px; background: white; border: 1px solid #e8eaf0; border-radius: 10px; padding: 6px 10px; }
+  .yearBtn { border: none; background: none; font-size: 18px; cursor: pointer; color: #6b6b67; padding: 0 4px; }
+  .yearBtn:disabled { opacity: 0.35; cursor: default; }
+  .yearLabel { font-weight: 700; font-size: 15px; min-width: 40px; text-align: center; display: inline-block; }
+  .card { background: white; border: 1px solid #e8eaf0; border-radius: 12px; padding: clamp(14px, 4vw, 18px) clamp(14px, 4vw, 20px); }
+  .cardTitle { margin: 0 0 8px; font-size: 15px; font-weight: 700; }
+  .intro { font-size: 14px; color: #44423c; line-height: 1.5; margin: 0 0 14px; }
+  .barGroup { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+  .barRow { display: flex; align-items: center; gap: 10px; }
+  .barRowLabel { width: clamp(48px, 16vw, 64px); font-size: 13px; color: #6b6b67; flex-shrink: 0; }
+  .barTrack { flex: 1; background: #f0efe8; border-radius: 6px; height: 14px; overflow: hidden; min-width: 0; }
+  .barFill { height: 100%; border-radius: 6px; }
+  .barFill.ingresos { background: #2F6FE0; }
+  .barFill.gastos { background: #E0A100; }
+  .barRowValor { width: clamp(78px, 24vw, 110px); text-align: right; font-size: 13px; font-weight: 600; flex-shrink: 0; }
+  .resultBox { border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; }
+  .resultBox.ok { background: #EAF7EF; }
+  .resultBox.warn { background: #FEF3E2; }
+  .resultBox.neutral { background: #FAFAF7; }
+  .resultTitle { font-size: 13px; color: #6b6b67; margin-bottom: 4px; }
+  .resultValor { font-size: clamp(21px, 6vw, 26px); font-weight: 800; }
+  .resultValor.ok { color: #0a7d3c; }
+  .resultValor.warn { color: #B45309; }
+  .medioBox { text-align: center; background: #F3E8FD; border: 1px solid #E4CFFB; border-radius: 12px; padding: 16px; margin: 14px 0; }
+  .medioBoxLabel { font-size: 12px; font-weight: 700; color: #7C3AED; text-transform: uppercase; letter-spacing: .06em; }
+  .medioBoxValor { font-size: clamp(28px, 8vw, 38px); font-weight: 800; color: #7C3AED; margin-top: 4px; }
+  .medioBoxCaption { font-size: 12px; color: #9a9a93; margin-top: 6px; line-height: 1.4; max-width: 420px; margin-left: auto; margin-right: auto; }
+  .detailGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(clamp(120px, 40vw, 190px), 1fr)); gap: 10px; margin-top: 12px; }
+  .detailTile { background: white; border: 1px solid #e8eaf0; border-radius: 10px; padding: 12px 14px; }
+  .detailLabel { font-size: 12px; color: #9a9a93; }
+  .detailValor { font-size: 18px; font-weight: 700; margin-top: 2px; }
+  .detailCaption { font-size: 12px; color: #9a9a93; margin-top: 4px; line-height: 1.4; }
+  .compareGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(clamp(120px, 40vw, 190px), 1fr)); gap: 10px; margin-top: 4px; }
+  .compareTile { background: white; border: 1px solid #e8eaf0; border-radius: 10px; padding: 12px 14px; }
+  .compareSub { font-size: 12px; color: #9a9a93; margin-top: 4px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .deltaBadge { display: inline-flex; align-items: center; border-radius: 999px; padding: 2px 8px; font-size: 11px; font-weight: 700; }
+  .caption { font-size: 12px; color: #9a9a93; margin-top: 8px; line-height: 1.4; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 8px 10px; border-bottom: 1px solid #e8eaf0; color: #9a9a93; font-weight: 600; font-size: 12px; text-transform: uppercase; }
+  td { padding: 8px 10px; border-bottom: 0.5px solid #f0efe8; }
+  .nota { font-size: 12px; color: #9a9a93; margin-top: 14px; }
+  .footer { text-align: center; font-size: 12px; color: #9a9a93; margin-top: 8px; }
+  .tableWrap { overflow-x: auto; }
+  .topGroup { margin-bottom: 16px; }
+  .topGroup:last-child { margin-bottom: 0; }
+  .topGroupTitle { font-size: 12px; font-weight: 700; color: #6b6b67; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 8px; }
+  .topRow { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .topRowLabel { width: clamp(70px, 28vw, 150px); font-size: 12px; color: #44423c; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .topEmpty { font-size: 13px; color: #9a9a93; }
+  .modeloRow { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-top: 0.5px solid #f0efe8; font-size: 13px; gap: 10px; }
+  .modeloRow:first-child { border-top: none; }
+  .modeloLabel { flex: 1; }
+  .estOk { color: #0a7d3c; font-weight: 700; }
+  .estNo { color: #c8c7c0; }
+  .estPend { color: #9a9a93; }
+  .periodSwitch { display: flex; gap: 8px; flex-wrap: wrap; }
+  .periodBtn { border: 1px solid #e8eaf0; background: white; border-radius: 8px; padding: clamp(5px, 1.5vw, 6px) clamp(9px, 3vw, 14px); font-size: 13px; font-weight: 600; color: #44423c; cursor: pointer; }
+  .periodBtn.active { background: #2F6FE0; color: white; border-color: #2F6FE0; }
+  .trRowActive { background: #EEF4FF; }
+  .modeloCardsWrap { display: flex; flex-direction: column; gap: 10px; }
+  .modeloCard { border: 1px solid #e8eaf0; border-radius: 10px; padding: 10px 12px; }
+  .modeloCardTitle { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+  .segmentsRow { display: flex; gap: 6px; flex-wrap: wrap; }
+  .segment { flex: 1; min-width: clamp(56px, 18vw, 70px); border-radius: 8px; padding: 8px 6px; text-align: center; font-size: 11px; line-height: 1.4; }
+  .segLabel { font-weight: 700; font-size: 12px; margin-bottom: 2px; }
+  .segOk { background: #EAF7EF; color: #0a7d3c; }
+  .segNo { background: #f5f5f2; color: #9a9a93; }
+  .segPend { background: #FEF3E2; color: #9a6b1a; }
+  .segActive { box-shadow: 0 0 0 2px #2F6FE0 inset; }
+  .layoutGrid { display: flex; flex-direction: column; gap: 16px; }
+  .mainCol, .sideCol { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  @media (min-width: 880px) {
+    .layoutGrid { display: grid; grid-template-columns: 1fr 1fr; align-items: start; }
+  }
+  .quarterNav { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .quarterBadge { font-size: 11px; font-weight: 700; color: #2F6FE0; background: #EAF1FD; border-radius: 999px; padding: 2px 8px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .donutRow { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+  .donutSvg { width: clamp(110px, 32vw, 140px); height: clamp(110px, 32vw, 140px); flex-shrink: 0; }
+  .legendList { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: clamp(140px, 50vw, 180px); }
+  .legendRow { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .legendDot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; display: inline-block; }
+  .legendLabel { flex: 1; min-width: 0; color: #44423c; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .legendValor { font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+  .stackBarWrap { margin: 4px 0; }
+  .stackBar { display: flex; height: 18px; border-radius: 8px; overflow: hidden; background: #f0efe8; }
+  .stackSeg { height: 100%; }
+  .stackLegend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px; font-size: 12px; color: #44423c; }
+  .stackLegendItem { display: flex; align-items: center; gap: 6px; }
+  .taxTotalBox { text-align: center; background: #FAEEDA; border: 1px solid #F3DDB8; border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+  .taxTotalLabel { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #854F0B; }
+  .taxTotalValor { font-size: clamp(24px, 6vw, 30px); font-weight: 800; color: #854F0B; margin-top: 4px; }
+  .taxLegend { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+  .taxLegendItem { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .taxLegendLabel { flex: 1; color: #44423c; }
+  .taxLegendValor { font-weight: 600; white-space: nowrap; }
+  .summaryCards { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  .summaryCard { flex: 1 1 140px; border-radius: 12px; padding: 16px 14px; text-align: center; }
+  .summaryLabel { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+  .summaryValor { font-size: clamp(20px, 5vw, 26px); font-weight: 800; }
+  .summarySub { font-size: 12px; color: #6b6b67; margin-top: 4px; }
+  .pct100Wrap { display: flex; flex-direction: column; gap: 10px; margin: 4px 0; }
+  .pct100Row { display: flex; flex-direction: column; gap: 4px; }
+  .pct100Row .barTrack { flex: none; }
+  .pct100LabelRow { display: flex; justify-content: space-between; font-size: 13px; color: #44423c; font-weight: 600; }
+  .alertBox { display: flex; gap: 10px; align-items: flex-start; border-radius: 10px; padding: 12px 14px; border: 1px solid; margin-top: 14px; }
+  .alertIcon { font-size: 16px; font-weight: 800; flex-shrink: 0; width: 20px; text-align: center; }
+  .alertTitle { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+  .alertText { font-size: 12px; color: #6b6b67; line-height: 1.4; }
+  .monthChartWrap { display: flex; align-items: flex-end; gap: clamp(2px, 1vw, 6px); }
+  .monthCol { flex: 1; display: flex; flex-direction: column; align-items: center; height: 160px; justify-content: flex-end; gap: 4px; min-width: 0; }
+  .monthBars { display: flex; gap: 2px; align-items: flex-end; height: 130px; width: 100%; }
+  .monthBar { flex: 1; border-radius: 2px 2px 0 0; min-height: 2px; }
+  .monthLabel { font-size: 10px; color: #9a9a93; text-align: center; }
+  .gateWrap { max-width: 380px; margin: 60px auto; text-align: center; }
+  .gateWrap h3 { margin: 0 0 8px; }
+  .gateInput { width: 100%; padding: 10px 12px; border: 1px solid #e8eaf0; border-radius: 8px; font-size: 18px; text-align: center; letter-spacing: 4px; margin: 12px 0; }
+  .gateBtn { background: #2F6FE0; color: white; border: none; border-radius: 8px; padding: 10px 18px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; }
+  .gateError { color: #b42318; font-size: 13px; margin-top: 10px; }
+</style>
+</head>
+<body>
+  <div class="card gateWrap" id="expiredCard" style="display:none">
+    <h3>Enlace caducado</h3>
+    <p class="intro" style="margin:0">Este informe ya no está disponible. Pide a tu asesora un enlace actualizado.</p>
+  </div>
+
+  <div class="card gateWrap" id="gateCard" style="display:none">
+    <h3>Informe protegido</h3>
+    <p class="intro" style="margin:0 0 4px">Introduce el código de acceso que te ha facilitado tu asesora.</p>
+    <form id="gateForm">
+      <input class="gateInput" id="pinInput" type="password" inputmode="numeric" autocomplete="off">
+      <button class="gateBtn" type="submit">Acceder</button>
+    </form>
+    <p class="gateError" id="gateError" style="display:none">Código incorrecto. Inténtalo de nuevo.</p>
+  </div>
+
+  <div class="container" id="mainContainer" style="display:none">
+    <header class="header">
+      <div>
+        <div class="eyebrow">Informe fiscal</div>
+        <h1>Hola, Cliente</h1>
+        <div class="actividad">Consultoría</div>
+      </div>
+      <div class="yearSwitch">
+        <button class="yearBtn" id="prevAno">‹</button>
+        <span class="yearLabel" id="anoLabel"></span>
+        <button class="yearBtn" id="nextAno">›</button>
+      </div>
+    </header>
+
+    <div class="periodSwitch" id="periodSwitch">
+      <button class="periodBtn active" data-periodo="ANUAL">Año completo</button>
+      <button class="periodBtn" data-periodo="1T">1T</button>
+      <button class="periodBtn" data-periodo="2T">2T</button>
+      <button class="periodBtn" data-periodo="3T">3T</button>
+      <button class="periodBtn" data-periodo="4T">4T</button>
+      <button class="periodBtn" data-periodo="COMPARATIVA">📊 Comparativa</button>
+    </div>
+
+    <div class="layoutGrid">
+    <div class="mainCol">
+
+    <div id="periodSections">
+    <section class="card">
+      <h3 class="cardTitle">Tu resumen del <span id="lblPeriodo1"></span></h3>
+      <p class="intro" id="introResumen"></p>
+
+      <div class="summaryCards">
+        <div class="summaryCard" style="background:#EAF1FD">
+          <div class="summaryLabel" style="color:#2F6FE0">Facturación</div>
+          <div class="summaryValor" id="vFacturacion"></div>
+          <div class="summarySub" id="subFacturacion"></div>
+        </div>
+        <div class="summaryCard" style="background:#FBEAEA">
+          <div class="summaryLabel" style="color:#C0392B">Gastos</div>
+          <div class="summaryValor" id="vGastosCard"></div>
+          <div class="summarySub" id="subGastosCard"></div>
+        </div>
+        <div class="summaryCard" style="background:#EAF7EF">
+          <div class="summaryLabel" style="color:#0a7d3c">Beneficio</div>
+          <div class="summaryValor" style="color:#0a7d3c" id="vBeneficioCard"></div>
+          <div class="summarySub" id="subBeneficioCard"></div>
+        </div>
+      </div>
+      <p class="caption">El beneficio es el dinero que realmente ganas: tus ingresos menos los gastos de tu actividad. El neto es lo que queda tras los impuestos del periodo.</p>
+
+      <div class="pct100Wrap">
+        <div class="pct100Row">
+          <div class="pct100LabelRow"><span>Gastos</span><span id="pct100GastosVal"></span></div>
+          <div class="barTrack"><div class="barFill" id="pct100GastosBar" style="background:#E0796B"></div></div>
+        </div>
+        <div class="pct100Row">
+          <div class="pct100LabelRow"><span>Impuestos</span><span id="pct100ImpuestosVal"></span></div>
+          <div class="barTrack"><div class="barFill" id="pct100ImpuestosBar" style="background:#E0A100"></div></div>
+        </div>
+        <div class="pct100Row">
+          <div class="pct100LabelRow"><span>Te queda a ti</span><span id="pct100QuedaVal"></span></div>
+          <div class="barTrack"><div class="barFill" id="pct100QuedaBar" style="background:#4CAF7D"></div></div>
+        </div>
+      </div>
+      <p class="caption">De cada 100 € que facturas, así se reparte aproximadamente entre gastos, impuestos (IGIC + Modelo 130 + Modelo 111) y lo que te queda.</p>
+
+      <div class="alertBox" id="alertBox">
+        <div class="alertIcon" id="alertIcon"></div>
+        <div>
+          <div class="alertTitle" id="alertTitle"></div>
+          <div class="alertText" id="alertText"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3 class="cardTitle">Evolución mensual de <span id="anoEvol"></span></h3>
+      <p class="intro">Ingresos y gastos mes a mes durante el año.</p>
+      <div class="monthChartWrap" id="monthChartWrap"></div>
+      <div class="stackLegend">
+        <div class="stackLegendItem"><span class="legendDot" style="background:#2F6FE0"></span> Ingresos</div>
+        <div class="stackLegendItem"><span class="legendDot" style="background:#E0A100"></span> Gastos</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3 class="cardTitle">¿Qué pasará en tu declaración de la Renta?</h3>
+      <div class="resultBox" id="boxRenta">
+        <div class="resultTitle" id="lblRentaResultado"></div>
+        <div class="resultValor" id="vRentaResultado"></div>
+      </div>
+      <p class="intro" id="introRenta"></p>
+
+      <div class="medioBox">
+        <div class="medioBoxLabel">% medio total (estatal + autonómico)</div>
+        <div class="medioBoxValor" id="vMedioTotal"></div>
+        <div class="medioBoxCaption">El porcentaje medio al que tributan tus ingresos, sumando la parte estatal y la autonómica del IRPF.</div>
+      </div>
+
+      <div class="detailGrid">
+        <div class="detailTile">
+          <div class="detailLabel">Base imponible</div>
+          <div class="detailValor" id="vBase"></div>
+          <div class="detailCaption">Tus ingresos menos los gastos que Hacienda tiene en cuenta para calcular el impuesto.</div>
+        </div>
+        <div class="detailTile">
+          <div class="detailLabel">Cuota total</div>
+          <div class="detailValor" id="vCuota"></div>
+          <div class="detailCaption">El impuesto que corresponde sobre esa base, antes de restar lo que ya has adelantado.</div>
+        </div>
+        <div class="detailTile">
+          <div class="detailLabel">Ya adelantado</div>
+          <div class="detailValor" id="vAdelantado"></div>
+          <div class="detailCaption">Lo que ya has pagado durante el año: retenciones de tus facturas + pagos del Modelo 130.</div>
+        </div>
+      </div>
+      <div class="stackBarWrap">
+        <div class="stackBar" id="stackBar"></div>
+        <div class="stackLegend" id="stackLegend"></div>
+      </div>
+      <p class="caption">De cada 100 € que ganas, así se reparte aproximadamente entre impuestos (IRPF) y lo que te queda en el bolsillo.</p>
+      <p class="nota">Previsión orientativa calculada con los datos disponibles en el momento de la publicación. El resultado definitivo puede variar.</p>
+    </section>
+
+    </div>
+
+    <section class="card" id="cardComparativa" style="display:none">
+      <h3 class="cardTitle">📊 Comparativa con <span id="anoAnteriorLabel"></span></h3>
+      <p class="intro" id="sinDatosAnterior" style="display:none">Todavía no tenemos datos del año anterior para este cliente, así que de momento no podemos comparar este año con el anterior.</p>
+      <div id="comparativaContenido" style="display:none">
+        <p class="intro" id="introComparativa"></p>
+        <div class="compareGrid" id="compareGrid"></div>
+        <p class="caption" id="captionComparativa"></p>
+        <div class="tableWrap" style="margin-top:14px">
+          <table>
+            <thead>
+              <tr>
+                <th>Trimestre</th>
+                <th id="thFactAno"></th>
+                <th id="thFactAnt"></th>
+                <th id="thBenAno"></th>
+                <th id="thBenAnt"></th>
+              </tr>
+            </thead>
+            <tbody id="tbodyComparativa"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    </div>
+
+    <div class="sideCol">
+    <section class="card">
+      <h3 class="cardTitle">Impuestos por trimestre</h3>
+      <div class="quarterNav">
+        <button class="yearBtn" id="prevPanelTri">‹</button>
+        <span style="font-weight:700;font-size:15px" id="panelTriNombre"></span>
+        <button class="yearBtn" id="nextPanelTri">›</button>
+        <span class="quarterBadge" id="panelTriActual" style="display:none">Actual</span>
+      </div>
+      <p class="intro" id="panelTriPlazo"></p>
+      <div class="taxTotalBox">
+        <div class="taxTotalLabel">Total a pagar</div>
+        <div class="taxTotalValor" id="panelTriTotal"></div>
+      </div>
+      <div id="panelTriConDatos">
+        <div class="stackBarWrap">
+          <div class="stackBar" id="panelTriStackBar"></div>
+        </div>
+        <div class="taxLegend" id="panelTriLegend"></div>
+      </div>
+      <div id="panelTriSinDatos" class="topEmpty" style="display:none">No tienes modelos trimestrales asociados.</div>
+      <p class="caption">Cada trimestre adelantas una parte de tus impuestos. Estos pagos se restan después del resultado de tu declaración de la Renta.</p>
+    </section>
+
+    <section class="card">
+      <h3 class="cardTitle">Impuestos del <span id="lblPeriodo4"></span></h3>
+      <div class="taxTotalBox">
+        <div class="taxTotalLabel">Total a pagar</div>
+        <div class="taxTotalValor" id="taxTotalValor"></div>
+      </div>
+      <div class="stackBarWrap">
+        <div class="stackBar" id="taxStackBar"></div>
+      </div>
+      <div class="taxLegend">
+        <div class="taxLegendItem">
+          <span class="legendDot" style="background:#854F0B"></span>
+          <span class="taxLegendLabel">IGIC (Mod. 420)</span>
+          <span class="taxLegendValor" id="taxIgicVal"></span>
+        </div>
+        <div class="taxLegendItem">
+          <span class="legendDot" style="background:#2F6FE0"></span>
+          <span class="taxLegendLabel">Modelo 130</span>
+          <span class="taxLegendValor" id="taxM130Val"></span>
+        </div>
+        <div class="taxLegendItem">
+          <span class="legendDot" style="background:#0a7d3c"></span>
+          <span class="taxLegendLabel">Modelo 111</span>
+          <span class="taxLegendValor" id="taxM111Val"></span>
+        </div>
+      </div>
+      <p class="caption">Suma de lo que corresponde pagar en el <span id="lblPeriodo5"></span> por IGIC, el pago a cuenta del IRPF (Modelo 130) y las retenciones de profesionales (Modelo 111).</p>
+    </section>
+
+    <section class="card">
+      <h3 class="cardTitle">En qué se ha ido tu gasto en el <span id="lblPeriodo3"></span></h3>
+      <p class="intro">Reparto de tus gastos deducibles por categoría.</p>
+      <div id="gastosCategoriaWrap"></div>
+    </section>
+
+    <section class="card">
+      <h3 class="cardTitle">Tus clientes en el <span id="lblPeriodo6"></span></h3>
+      <div id="topClientes"></div>
+    </section>
+
+    <section class="card">
+      <h3 class="cardTitle">Tus proveedores en el <span id="lblPeriodo7"></span></h3>
+      <div id="topProveedores"></div>
+    </section>
+
+    <section class="card" id="cardModelos">
+      <h3 class="cardTitle">📅 Tus modelos y plazos en <span id="anoControl"></span></h3>
+      <p class="intro">Así va el calendario de tus declaraciones trimestrales y anuales.</p>
+      <div class="modeloCardsWrap" id="modeloCards"></div>
+      <p class="caption">Verde = ya presentado · Gris = no corresponde ese trimestre · Ámbar = pendiente, con el plazo habitual. El trimestre seleccionado arriba aparece resaltado.</p>
+    </section>
+    </div>
+
+    </div>
+
+    <footer class="footer">Informe generado y actualizado hasta el 14/6/2026, 8:18:00</footer>
+  </div>
+
+<script>
+(function(){
+  var EXPIRA = null;
+  var PIN_PROTECTED = true;
+  var PIN_SALT_B64 = "7m98jg2xEdE6lVzSaOclGg==";
+  var PIN_IV_B64 = "hyEEk3yxPQbUyMQZ";
+  var PIN_DATA_B64 = "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";
+  var PIN_ITER = 100000;
+  var PLAIN_DATA = null;
+
+  function fmtEUR(n) {
+    return Number(n || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+  }
+  function fmtEURde100(n) {
+    return (Number(n || 0) * 100).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+  }
+
+  var TRIMESTRES_ORDEN = ['1T', '2T', '3T', '4T'];
+  function trimestreActual() {
+    var m = new Date().getMonth() + 1;
+    if (m <= 3) return '1T';
+    if (m <= 6) return '2T';
+    if (m <= 9) return '3T';
+    return '4T';
+  }
+
+  function buildDonutSVG(items) {
+    var total = items.reduce(function(s, x){ return s + x.importe; }, 0);
+    var radio = 40, c = 2 * Math.PI * radio, acc = 0;
+    var inner = '<circle cx="50" cy="50" r="' + radio + '" fill="none" stroke="#f0efe8" stroke-width="16"></circle>';
+    inner += '<g transform="rotate(-90 50 50)">';
+    items.forEach(function(it){
+      var frac = total > 0 ? it.importe / total : 0;
+      var dash = frac * c;
+      inner += '<circle cx="50" cy="50" r="' + radio + '" fill="none" stroke="' + it.color + '" stroke-width="16" stroke-dasharray="' + dash + ' ' + (c - dash) + '" stroke-dashoffset="' + (-acc) + '"></circle>';
+      acc += dash;
+    });
+    inner += '</g>';
+    return '<svg viewBox="0 0 100 100" class="donutSvg">' + inner + '</svg>';
+  }
+
+  function buildLegendHTML(items) {
+    var html = '<div class="legendList">';
+    items.forEach(function(it){
+      html += '<div class="legendRow"><span class="legendDot" style="background:' + it.color + '"></span><span class="legendLabel">' + it.label + '</span><span class="legendValor">' + fmtEUR(it.importe) + ' · ' + it.pct.toFixed(0) + '%</span></div>';
+    });
+    html += '</div>';
+    return html;
+  }
+
+  function renderTopRows(containerId, items, color) {
+    var container = document.getElementById(containerId);
+    container.innerHTML = '';
+    if (!items || items.length === 0) {
+      var empty = document.createElement('div');
+      empty.className = 'topEmpty';
+      empty.textContent = 'Sin datos para este año.';
+      container.appendChild(empty);
+      return;
+    }
+    var max = items.reduce(function(m, x){ return Math.max(m, x.importe); }, 1);
+    items.forEach(function(it){
+      var row = document.createElement('div');
+      row.className = 'topRow';
+
+      var label = document.createElement('div');
+      label.className = 'topRowLabel';
+      label.textContent = it.nombre;
+      label.title = it.nombre;
+
+      var track = document.createElement('div');
+      track.className = 'barTrack';
+      var fill = document.createElement('div');
+      fill.className = 'barFill';
+      fill.style.background = color || '#5B8DEF';
+      fill.style.width = Math.min(100, (it.importe / max) * 100) + '%';
+      track.appendChild(fill);
+
+      var val = document.createElement('div');
+      val.className = 'barRowValor';
+      val.textContent = fmtEUR(it.importe);
+
+      row.appendChild(label);
+      row.appendChild(track);
+      row.appendChild(val);
+      container.appendChild(row);
+    });
+  }
+
+  function iniciar(DATA) {
+    var anos = Object.keys(DATA).map(Number).sort(function(a,b){ return b - a; });
+    var idx = anos.indexOf(2026);
+    if (idx === -1) idx = 0;
+    var periodoSel = 'ANUAL';
+    var panelTri = trimestreActual();
+
+    function render() {
+      var ano = anos[idx];
+      var d = DATA[ano];
+      var res = d.resumen;
+      var r = d.renta;
+
+      document.getElementById('anoLabel').textContent = ano;
+      document.getElementById('prevAno').disabled = idx >= anos.length - 1;
+      document.getElementById('nextAno').disabled = idx <= 0;
+
+      // Mostrar la pestaña "Comparativa" o las secciones normales del periodo
+      var esComparativa = periodoSel === 'COMPARATIVA';
+      document.getElementById('periodSections').style.display = esComparativa ? 'none' : '';
+      document.getElementById('cardComparativa').style.display = esComparativa ? '' : 'none';
+
+      // Periodo seleccionado: año completo o un trimestre concreto
+      var trimestreSel = periodoSel !== 'ANUAL' ? d.trimestres.find(function(t){ return t.trimestre === periodoSel; }) : null;
+      var resumenP = trimestreSel
+        ? { ingresos: trimestreSel.ingresos, gastos: trimestreSel.gastos, beneficio: trimestreSel.beneficio, impuestos: trimestreSel.impuestos, neto: trimestreSel.beneficio - trimestreSel.impuestos }
+        : res;
+      var topClientesP = trimestreSel ? trimestreSel.topClientes : d.topClientes;
+      var topProveedoresP = trimestreSel ? trimestreSel.topProveedores : d.topProveedores;
+      var labelPeriodo = trimestreSel ? (trimestreSel.nombre.toLowerCase() + ' de ' + ano) : ('año ' + ano);
+      document.getElementById('lblPeriodo1').textContent = labelPeriodo;
+      document.getElementById('lblPeriodo3').textContent = labelPeriodo;
+      document.getElementById('lblPeriodo4').textContent = labelPeriodo;
+      document.getElementById('lblPeriodo5').textContent = labelPeriodo;
+      document.getElementById('lblPeriodo6').textContent = labelPeriodo;
+      document.getElementById('lblPeriodo7').textContent = labelPeriodo;
+
+      // Resumen del periodo
+      document.getElementById('introResumen').textContent =
+        'Durante ' + labelPeriodo + ' has facturado ' + fmtEUR(resumenP.ingresos) + ' y has tenido ' + fmtEUR(resumenP.gastos) + ' en gastos.';
+
+      // Tarjetas Facturación / Gastos / Beneficio
+      var numMeses = trimestreSel ? 3 : 12;
+      document.getElementById('vFacturacion').textContent = fmtEUR(resumenP.ingresos);
+      document.getElementById('subFacturacion').textContent = fmtEUR(resumenP.ingresos / numMeses) + ' / mes';
+      document.getElementById('vGastosCard').textContent = fmtEUR(resumenP.gastos);
+      document.getElementById('vBeneficioCard').textContent = fmtEUR(resumenP.beneficio);
+      document.getElementById('subBeneficioCard').textContent = 'Neto: ' + fmtEUR(resumenP.neto);
+
+      // Reparto "de cada 100 €": gastos, impuestos (IGIC + Modelo 130 + Modelo 111) y lo que queda
+      var pct100Gastos = resumenP.ingresos > 0 ? Math.max(0, Math.min(100, (resumenP.gastos / resumenP.ingresos) * 100)) : 0;
+      var pct100Impuestos = resumenP.ingresos > 0 ? Math.max(0, Math.min(100 - pct100Gastos, (resumenP.impuestos / resumenP.ingresos) * 100)) : 0;
+      var pct100Queda = Math.max(0, 100 - pct100Gastos - pct100Impuestos);
+      document.getElementById('subGastosCard').textContent = pct100Gastos.toFixed(0) + '% de facturación';
+      document.getElementById('pct100GastosBar').style.width = pct100Gastos + '%';
+      document.getElementById('pct100GastosVal').textContent = fmtEURde100(pct100Gastos / 100);
+      document.getElementById('pct100ImpuestosBar').style.width = pct100Impuestos + '%';
+      document.getElementById('pct100ImpuestosVal').textContent = fmtEURde100(pct100Impuestos / 100);
+      document.getElementById('pct100QuedaBar').style.width = pct100Queda + '%';
+      document.getElementById('pct100QuedaVal').textContent = fmtEURde100(pct100Queda / 100);
+
+      // Aviso según el margen de beneficio
+      var margen = resumenP.ingresos > 0 ? (resumenP.beneficio / resumenP.ingresos) * 100 : 0;
+      var alerta;
+      if (margen < 10) {
+        alerta = { color: '#B42318', bg: '#FCEAEA', border: '#f5d0d0', icon: '⚠', titulo: 'Margen de beneficio bajo', texto: 'Tu margen de beneficio es del ' + margen.toFixed(0) + '%. Te queda poco de cada euro facturado: revisa tus gastos o tus precios.' };
+      } else if (margen < 25) {
+        alerta = { color: '#9a6b1a', bg: '#FEF3E2', border: '#f5e3c0', icon: '!', titulo: 'Margen de beneficio ajustado', texto: 'Tu margen de beneficio es del ' + margen.toFixed(0) + '%. Conviene vigilar la evolución de tus gastos.' };
+      } else {
+        alerta = { color: '#0a7d3c', bg: '#EAF7EF', border: '#cfe9d8', icon: '✓', titulo: 'Buen margen de beneficio', texto: 'Tu margen de beneficio es del ' + margen.toFixed(0) + '%. Tienes un buen colchón sobre lo que facturas.' };
+      }
+      var alertBox = document.getElementById('alertBox');
+      alertBox.style.background = alerta.bg;
+      alertBox.style.borderColor = alerta.border;
+      var alertIconEl = document.getElementById('alertIcon');
+      alertIconEl.textContent = alerta.icon;
+      alertIconEl.style.color = alerta.color;
+      var alertTitleEl = document.getElementById('alertTitle');
+      alertTitleEl.textContent = alerta.titulo;
+      alertTitleEl.style.color = alerta.color;
+      document.getElementById('alertText').textContent = alerta.texto;
+
+      // Evolución mensual: ingresos vs gastos
+      document.getElementById('anoEvol').textContent = ano;
+      var meses = d.meses || [];
+      var maxMes = 1;
+      meses.forEach(function(m){ maxMes = Math.max(maxMes, m.ingresos, m.gastos); });
+      var monthHtml = '';
+      meses.forEach(function(m){
+        var pctIng = Math.min(100, (m.ingresos / maxMes) * 100);
+        var pctGas = Math.min(100, (m.gastos / maxMes) * 100);
+        monthHtml += '<div class="monthCol"><div class="monthBars">' +
+          '<div class="monthBar" style="height:' + pctIng + '%;background:#2F6FE0" title="Ingresos: ' + fmtEUR(m.ingresos) + '"></div>' +
+          '<div class="monthBar" style="height:' + pctGas + '%;background:#E0A100" title="Gastos: ' + fmtEUR(m.gastos) + '"></div>' +
+          '</div><div class="monthLabel">' + m.nombre + '</div></div>';
+      });
+      document.getElementById('monthChartWrap').innerHTML = monthHtml;
+
+      // Previsión de la Renta
+      var aDevolver = r.cuotaDiferencial < 0;
+      var aIngresar = r.cuotaDiferencial > 0;
+      var boxRenta = document.getElementById('boxRenta');
+      var lbl = document.getElementById('lblRentaResultado');
+      var val = document.getElementById('vRentaResultado');
+      var intro = document.getElementById('introRenta');
+      if (aDevolver) {
+        boxRenta.className = 'resultBox ok';
+        val.className = 'resultValor ok';
+        lbl.textContent = 'Hacienda te devolvería aproximadamente';
+        intro.textContent = 'Según los datos hasta ahora, en tu próxima declaración de la Renta Hacienda te devolvería dinero.';
+      } else if (aIngresar) {
+        boxRenta.className = 'resultBox warn';
+        val.className = 'resultValor warn';
+        lbl.textContent = 'Tendrías que pagar aproximadamente';
+        intro.textContent = 'Según los datos hasta ahora, en tu próxima declaración de la Renta tendrías que pagar a Hacienda.';
+      } else {
+        boxRenta.className = 'resultBox neutral';
+        val.className = 'resultValor';
+        lbl.textContent = 'Resultado estimado';
+        intro.textContent = 'Según los datos hasta ahora, tu declaración de la Renta no tendría ni a pagar ni a devolver.';
+      }
+      val.textContent = fmtEUR(Math.abs(r.cuotaDiferencial));
+
+      document.getElementById('vBase').textContent = fmtEUR(r.baseImponible);
+      document.getElementById('vCuota').textContent = fmtEUR(r.cuotaTotal);
+      document.getElementById('vAdelantado').textContent = fmtEUR(r.pagosACuenta);
+      document.getElementById('vMedioTotal').textContent = (r.tipoMedioTotal * 100).toFixed(2) + '%';
+
+      // Barra apilada "de cada 100 €"
+      var pctEstatal = Math.max(0, Math.min(100, r.tipoMedioEstatal));
+      var pctAutonomico = Math.max(0, Math.min(100 - pctEstatal, r.tipoMedioAutonomico));
+      var pctQueda = Math.max(0, 100 - pctEstatal - pctAutonomico);
+      document.getElementById('stackBar').innerHTML =
+        '<div class="stackSeg" style="width:' + pctEstatal + '%;background:#2F6FE0" title="Administración estatal"></div>' +
+        '<div class="stackSeg" style="width:' + pctAutonomico + '%;background:#E0A100" title="Administración autonómica"></div>' +
+        '<div class="stackSeg" style="width:' + pctQueda + '%;background:#EAF7EF" title="Lo que te queda"></div>';
+      document.getElementById('stackLegend').innerHTML =
+        '<div class="stackLegendItem"><span class="legendDot" style="background:#2F6FE0"></span> Estatal: ' + fmtEURde100(pctEstatal) + '</div>' +
+        '<div class="stackLegendItem"><span class="legendDot" style="background:#E0A100"></span> Autonómica: ' + fmtEURde100(pctAutonomico) + '</div>' +
+        '<div class="stackLegendItem"><span class="legendDot" style="background:#EAF7EF;border:1px solid #e8eaf0"></span> Te queda: ' + fmtEURde100(pctQueda) + '</div>';
+
+      // Gastos por categoría (donut)
+      var gastosPorCategoriaP = trimestreSel ? trimestreSel.gastosPorCategoria : d.gastosPorCategoria;
+      var wrapCat = document.getElementById('gastosCategoriaWrap');
+      if (gastosPorCategoriaP && gastosPorCategoriaP.length > 0) {
+        wrapCat.innerHTML = '<div class="donutRow">' + buildDonutSVG(gastosPorCategoriaP) + buildLegendHTML(gastosPorCategoriaP) + '</div>';
+      } else {
+        wrapCat.innerHTML = '<div class="topEmpty">Sin gastos registrados en este periodo.</div>';
+      }
+
+      // Top clientes / proveedores (del periodo seleccionado, de mayor a menor importe)
+      renderTopRows('topClientes', topClientesP || [], '#0a7d3c');
+      renderTopRows('topProveedores', topProveedoresP || [], '#B42318');
+
+      // Desglose de impuestos del periodo: IGIC (Modelo 420) + Modelo 130 + Modelo 111
+      var impuestosDesglose = trimestreSel
+        ? { igic: trimestreSel.modelo420 || 0, m130: trimestreSel.modelo130 || 0, m111: trimestreSel.modelo111 || 0 }
+        : {
+            igic: d.trimestres.reduce(function(s, t){ return s + (t.modelo420 || 0); }, 0),
+            m130: d.trimestres.reduce(function(s, t){ return s + (t.modelo130 || 0); }, 0),
+            m111: d.trimestres.reduce(function(s, t){ return s + (t.modelo111 || 0); }, 0),
+          };
+      var impuestosTotal = Math.max(0, impuestosDesglose.igic) + Math.max(0, impuestosDesglose.m130) + Math.max(0, impuestosDesglose.m111);
+      var pctImp = function(v){ return impuestosTotal > 0 ? Math.max(0, (v / impuestosTotal) * 100) : 0; };
+      document.getElementById('taxTotalValor').textContent = fmtEUR(resumenP.impuestos);
+      document.getElementById('taxStackBar').innerHTML =
+        '<div class="stackSeg" style="width:' + pctImp(impuestosDesglose.igic) + '%;background:#854F0B" title="IGIC (Modelo 420)"></div>' +
+        '<div class="stackSeg" style="width:' + pctImp(impuestosDesglose.m130) + '%;background:#2F6FE0" title="Modelo 130"></div>' +
+        '<div class="stackSeg" style="width:' + pctImp(impuestosDesglose.m111) + '%;background:#0a7d3c" title="Modelo 111"></div>';
+      document.getElementById('taxIgicVal').textContent = fmtEUR(impuestosDesglose.igic);
+      document.getElementById('taxM130Val').textContent = fmtEUR(impuestosDesglose.m130);
+      document.getElementById('taxM111Val').textContent = fmtEUR(impuestosDesglose.m111);
+
+      // Panel de impuestos trimestrales (navegable)
+      var panelT = d.trimestres.find(function(t){ return t.trimestre === panelTri; }) || d.trimestres[0];
+      var mfPanel = d.modelosFiscales || { trimestrales: [] };
+      var modelosTriIds = {};
+      (mfPanel.trimestrales || []).forEach(function(m){ modelosTriIds[m.id] = true; });
+      var panelImpuestos = [];
+      if (modelosTriIds['M420']) panelImpuestos.push({ key: 'igic', label: 'IGIC (Mod. 420)', valor: panelT.modelo420, color: '#854F0B' });
+      if (modelosTriIds['M130']) panelImpuestos.push({ key: 'm130', label: 'Modelo 130', valor: panelT.modelo130, color: '#2F6FE0' });
+      if (modelosTriIds['M111']) panelImpuestos.push({ key: 'm111', label: 'Modelo 111', valor: panelT.modelo111, color: '#0a7d3c' });
+      var panelTotal = panelImpuestos.reduce(function(s, x){ return s + Math.max(0, x.valor); }, 0);
+      var pctPanel = function(v){ return panelTotal > 0 ? Math.max(0, (v / panelTotal) * 100) : 0; };
+
+      document.getElementById('panelTriNombre').textContent = panelT.nombre;
+      document.getElementById('panelTriPlazo').textContent = panelT.plazo || '';
+      document.getElementById('panelTriActual').style.display = panelTri === trimestreActual() ? '' : 'none';
+      document.getElementById('panelTriTotal').textContent = fmtEUR(panelTotal);
+      if (panelImpuestos.length > 0) {
+        document.getElementById('panelTriConDatos').style.display = '';
+        document.getElementById('panelTriSinDatos').style.display = 'none';
+        document.getElementById('panelTriStackBar').innerHTML = panelImpuestos.map(function(it){
+          return '<div class="stackSeg" style="width:' + pctPanel(it.valor) + '%;background:' + it.color + '" title="' + it.label + '"></div>';
+        }).join('');
+        document.getElementById('panelTriLegend').innerHTML = panelImpuestos.map(function(it){
+          return '<div class="taxLegendItem"><span class="legendDot" style="background:' + it.color + '"></span><span class="taxLegendLabel">' + it.label + '</span><span class="taxLegendValor">' + fmtEUR(it.valor) + '</span></div>';
+        }).join('');
+      } else {
+        document.getElementById('panelTriConDatos').style.display = 'none';
+        document.getElementById('panelTriSinDatos').style.display = '';
+      }
+
+      // Comparativa con el año anterior
+      var comp = d.comparativa;
+      document.getElementById('anoAnteriorLabel').textContent = comp.anoAnterior;
+      var sinDatosEl = document.getElementById('sinDatosAnterior');
+      var contenidoEl = document.getElementById('comparativaContenido');
+      if (!comp.hayDatosAnterior) {
+        sinDatosEl.style.display = '';
+        contenidoEl.style.display = 'none';
+      } else {
+        sinDatosEl.style.display = 'none';
+        contenidoEl.style.display = '';
+        var mesHastaLbl = meses[comp.hastaMes - 1] ? meses[comp.hastaMes - 1].nombre : '';
+        document.getElementById('introComparativa').textContent =
+          'Así te va en ' + ano + ' hasta ' + mesHastaLbl + ', comparado con el mismo periodo de ' + comp.anoAnterior + '.';
+        document.getElementById('captionComparativa').textContent =
+          'Comparativa calculada con los datos disponibles hasta ' + mesHastaLbl + ' de cada año, para que sea una comparación justa.';
+
+        var compareRows = [
+          { label: 'Facturación', actual: comp.ytdActual.ingresos, anterior: comp.ytdAnterior.ingresos, mejorSiSube: true },
+          { label: 'Gastos', actual: comp.ytdActual.gastos, anterior: comp.ytdAnterior.gastos, mejorSiSube: false },
+          { label: 'Beneficio', actual: comp.ytdActual.beneficio, anterior: comp.ytdAnterior.beneficio, mejorSiSube: true },
+        ];
+        var compareHtml = '';
+        compareRows.forEach(function(row){
+          var delta = row.anterior !== 0 ? ((row.actual - row.anterior) / Math.abs(row.anterior)) * 100 : null;
+          var bueno = delta === null ? true : (row.mejorSiSube ? delta >= 0 : delta <= 0);
+          var badge = '';
+          if (delta !== null) {
+            var color = bueno ? '#0a7d3c' : '#B42318';
+            var bg = bueno ? '#EAF7EF' : '#FCEAEA';
+            var arrow = delta >= 0 ? '▲' : '▼';
+            badge = '<span class="deltaBadge" style="color:' + color + ';background:' + bg + '">' + arrow + ' ' + Math.abs(delta).toFixed(0) + '%</span>';
+          }
+          compareHtml += '<div class="compareTile">' +
+            '<div class="detailLabel">' + row.label + '</div>' +
+            '<div class="detailValor">' + fmtEUR(row.actual) + '</div>' +
+            '<div class="compareSub"><span>' + fmtEUR(row.anterior) + ' en ' + comp.anoAnterior + '</span>' + badge + '</div>' +
+            '</div>';
+        });
+        document.getElementById('compareGrid').innerHTML = compareHtml;
+
+        document.getElementById('thFactAno').textContent = 'Facturación ' + ano;
+        document.getElementById('thFactAnt').textContent = 'Facturación ' + comp.anoAnterior;
+        document.getElementById('thBenAno').textContent = 'Beneficio ' + ano;
+        document.getElementById('thBenAnt').textContent = 'Beneficio ' + comp.anoAnterior;
+
+        var tbodyComp = document.getElementById('tbodyComparativa');
+        tbodyComp.innerHTML = '';
+        d.trimestres.forEach(function(t, i){
+          var tAnt = comp.trimestresAnterior[i];
+          var tr = document.createElement('tr');
+          if (t.trimestre === periodoSel) tr.className = 'trRowActive';
+          tr.innerHTML = '<td>' + t.nombre + '</td><td>' + fmtEUR(t.ingresos) + '</td><td>' + (tAnt ? fmtEUR(tAnt.ingresos) : '—') + '</td><td>' + fmtEUR(t.beneficio) + '</td><td>' + (tAnt ? fmtEUR(tAnt.beneficio) : '—') + '</td>';
+          tbodyComp.appendChild(tr);
+        });
+      }
+
+      // Modelos y plazos: tarjetas con progreso por trimestre
+      var mf = d.modelosFiscales || { ejercicio: ano, trimestrales: [], anuales: [] };
+      var cardModelos = document.getElementById('cardModelos');
+      if (esComparativa || (mf.trimestrales.length === 0 && mf.anuales.length === 0)) {
+        cardModelos.style.display = 'none';
+      } else {
+        cardModelos.style.display = '';
+        document.getElementById('anoControl').textContent = mf.ejercicio;
+
+        var html = '';
+        mf.trimestrales.forEach(function(m){
+          html += '<div class="modeloCard"><div class="modeloCardTitle">' + m.label + '</div><div class="segmentsRow">';
+          m.trimestres.forEach(function(t){
+            var cls, label, sub;
+            if (t.estado === 'presentado') {
+              cls = 'segOk'; label = '✓ ' + t.trimestre; sub = 'Presentado' + (t.fecha ? ' (' + t.fecha + ')' : '');
+            } else if (t.estado === 'no_presentar') {
+              cls = 'segNo'; label = t.trimestre; sub = 'No aplica';
+            } else {
+              cls = 'segPend'; label = t.trimestre; sub = t.plazo;
+            }
+            if (t.trimestre === periodoSel) cls += ' segActive';
+            html += '<div class="segment ' + cls + '"><div class="segLabel">' + label + '</div><div>' + sub + '</div></div>';
+          });
+          html += '</div></div>';
+        });
+        mf.anuales.forEach(function(m){
+          var cls, sub;
+          if (m.estado === 'presentado') {
+            cls = 'segOk'; sub = '✓ Presentado' + (m.fecha ? ' (' + m.fecha + ')' : '');
+          } else if (m.estado === 'no_presentar') {
+            cls = 'segNo'; sub = 'No aplica este año';
+          } else {
+            cls = 'segPend'; sub = 'Pendiente — plazo: ' + m.plazo;
+          }
+          html += '<div class="modeloCard"><div class="modeloCardTitle">' + m.label + '</div><div class="segmentsRow"><div class="segment ' + cls + '" style="flex:1 1 100%">' + sub + '</div></div></div>';
+        });
+        document.getElementById('modeloCards').innerHTML = html;
+      }
+    }
+
+    document.getElementById('prevAno').addEventListener('click', function(){
+      if (idx < anos.length - 1) { idx++; render(); }
+    });
+    document.getElementById('nextAno').addEventListener('click', function(){
+      if (idx > 0) { idx--; render(); }
+    });
+
+    var periodBtns = document.querySelectorAll('.periodBtn');
+    periodBtns.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        periodoSel = btn.getAttribute('data-periodo');
+        periodBtns.forEach(function(b){ b.classList.toggle('active', b === btn); });
+        render();
+      });
+    });
+
+    function irPanelTrimestre(dir) {
+      var i = TRIMESTRES_ORDEN.indexOf(panelTri);
+      var next = (i + dir + TRIMESTRES_ORDEN.length) % TRIMESTRES_ORDEN.length;
+      panelTri = TRIMESTRES_ORDEN[next];
+      render();
+    }
+    document.getElementById('prevPanelTri').addEventListener('click', function(){ irPanelTrimestre(-1); });
+    document.getElementById('nextPanelTri').addEventListener('click', function(){ irPanelTrimestre(1); });
+
+    render();
+  }
+
+  function mostrarApp() {
+    document.getElementById('mainContainer').style.display = '';
+  }
+
+  // ── Comprobación de caducidad ──────────────────────────────────────────
+  if (EXPIRA) {
+    var hoy = new Date();
+    var fin = new Date(EXPIRA + 'T23:59:59');
+    if (hoy > fin) {
+      document.getElementById('expiredCard').style.display = '';
+      return;
+    }
+  }
+
+  // ── Sin PIN: mostrar directamente ──────────────────────────────────────
+  if (!PIN_PROTECTED) {
+    mostrarApp();
+    iniciar(PLAIN_DATA);
+    return;
+  }
+
+  // ── Con PIN: pedir código y descifrar con Web Crypto ───────────────────
+  function b64ToBytes(b64) {
+    var bin = atob(b64);
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+  }
+
+  function descifrar(pin) {
+    var salt = b64ToBytes(PIN_SALT_B64);
+    var iv = b64ToBytes(PIN_IV_B64);
+    var datos = b64ToBytes(PIN_DATA_B64);
+    var enc = new TextEncoder();
+    return crypto.subtle.importKey('raw', enc.encode(pin), { name: 'PBKDF2' }, false, ['deriveKey'])
+      .then(function(keyMaterial){
+        return crypto.subtle.deriveKey(
+          { name: 'PBKDF2', salt: salt, iterations: PIN_ITER, hash: 'SHA-256' },
+          keyMaterial,
+          { name: 'AES-GCM', length: 256 },
+          false,
+          ['decrypt']
+        );
+      })
+      .then(function(key){
+        return crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, key, datos);
+      })
+      .then(function(plainBuf){
+        return JSON.parse(new TextDecoder().decode(plainBuf));
+      });
+  }
+
+  var gateCard = document.getElementById('gateCard');
+  var gateError = document.getElementById('gateError');
+  gateCard.style.display = '';
+
+  document.getElementById('gateForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    gateError.style.display = 'none';
+    var pin = document.getElementById('pinInput').value;
+    descifrar(pin).then(function(data){
+      gateCard.style.display = 'none';
+      mostrarApp();
+      iniciar(data);
+    }).catch(function(){
+      gateError.style.display = '';
+    });
+  });
+})();
+</script>
+</body>
+</html>
